@@ -1,0 +1,542 @@
+#!/bin/zsh
+
+# Colors for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Version of the script
+VERSION="1.0.0"
+
+# Function to scaffold a PHP MVC project
+scaffold() {
+    local PROJECT_NAME=$1
+
+    # Check if directory already exists
+    if [[ -d "$PROJECT_NAME" ]]; then
+        echo "${RED}Error: Directory '$PROJECT_NAME' already exists${NC}"
+        exit 1
+    fi
+
+    echo "${GREEN}Creating MVC project: $PROJECT_NAME${NC}"
+
+    # Create project structure
+    # Create main directories
+    echo "##############################################################################"
+    echo "${YELLOW}Creating project structure...${NC}"
+    echo "Creating directories for: $PROJECT_NAME"
+    echo "##############################################################################"
+    # Create project directory
+    mkdir -p "$PROJECT_NAME"
+    cd "$PROJECT_NAME" || exit
+
+    # Create src structure
+    echo "${YELLOW}Creating src structure...${NC}"
+    echo "Creating subdirectories in src"
+    echo "##############################################################################"
+    # Create subdirectories in src
+    mkdir -p src/Config
+    echo "${GREEN}src/Config created${NC}"
+    mkdir -p src/Controllers
+    echo "${GREEN}src/Controllers created${NC}"
+    mkdir -p src/Database
+    echo "${GREEN}src/Database created${NC}"
+    mkdir -p src/Helpers
+    echo "${GREEN}src/Helpers created${NC}"
+    mkdir -p src/Models
+    echo "${GREEN}src/Models created${NC}"
+    mkdir -p src/Router
+    echo "${GREEN}src/Router created${NC}"
+    mkdir -p src/Services
+    echo "${GREEN}src/Services created${NC}"
+    mkdir -p src/Views/{layouts,partials}
+    echo "${GREEN}src/Views/layouts and src/Views/partials created${NC}"
+    echo "##############################################################################"
+
+    # Create other directories
+    echo "${YELLOW}Creating other directories...${NC}"
+    echo "##############################################################################"
+    mkdir -p assets/{css,js,images}
+    echo "${GREEN}assets/css, assets/js, and assets/images created${NC}"
+    mkdir -p config;
+    echo "${GREEN}config deirectory created${NC}"
+    mkdir -p logs
+    echo "${GREEN}logs directory created${NC}"
+    mkdir -p public
+    echo "${GREEN}public directory created${NC}"
+    mkdir -p tests
+    echo "${GREEN}tests directory created${NC}"
+    echo "##############################################################################"
+
+    # Create initial files
+    echo "${YELLOW}Creating initial files...${NC}"
+    echo "##############################################################################"
+
+    # Create public/index.php
+    echo "<?php
+require 'src/Router/Router.php';" > index.php;
+    echo "${GREEN}index.php created${NC}"
+
+    # Create .gitignore
+    echo 'vendor/
+.env
+config/*.php
+/tests/Results/
+logs/*
+!logs/.gitkeep
+.DS_Store
+*.log' > .gitignore;
+    echo "${GREEN}.gitignore created${NC}"
+
+    # Create example .env file
+    echo "DB_HOST=localhost
+DB_NAME=mvc_app
+DB_USER=root
+DB_PASS=
+APP_ENV=development
+APP_DEBUG=true" > .env.example;
+    echo "${GREEN}.env.example created${NC}"
+
+    # Create empty log file
+    touch "logs/.gitkeep"
+    echo "${GREEN}logs/.gitkeep created${NC}"
+
+    # Create routes file
+    echo "<?php
+
+return [
+    '' => 'src/Controllers/HomeController.php',
+    '/' => 'src/Controllers/HomeController.php',
+    '/home' => 'src/Controllers/HomeController.php',
+    '/index' => 'src/Controllers/HomeController.php',
+];" > src/Router/routes.php;
+    echo "${GREEN}src/Router/routes.php created${NC}"
+
+    # Create Router
+    echo "<?php
+
+\$routes = require 'src/Router/routes.php';
+\$uri = parse_url(\$_SERVER['REQUEST_URI'])['path'];
+
+if (array_key_exists(\$uri, \$routes)) {
+    \$route = \$routes[\$uri];
+} else {
+    \$route = 'src/Controllers/404Controller.php';
+    http_response_code(404);
+    error_log('404 Not Found:' . \$uri);
+}
+
+require \$route;" > src/Router/Router.php;
+    echo "${GREEN}src/Router/Router.php created${NC}"
+
+    # Create 404 controller example
+    echo "<?php
+require 'src/Views/partials/404.php';" > src/Controllers/404Controller.php;
+    echo "${GREEN}src/Controllers/404Controller.php created${NC}"
+
+    # Create Home controller example
+    echo "<?php
+require 'src/Views/layouts/main.php';" > src/Controllers/HomeController.php;
+    echo "${GREEN}src/Controllers/HomeController.php created${NC}"
+
+    # Create example model
+    echo "<?php
+namespace App\\Models;
+
+class User
+{
+    private \$id;
+    private \$username;
+    private \$email;
+
+    public function __construct(string \$username = '', string \$email = '')
+    {
+        \$this->username = \$username;
+        \$this->email = \$email;
+    }
+}" > src/Models/User.php;
+    echo "${GREEN}src/Models/User.php created${NC}"
+
+    # Create base configuration
+    echo "<?php
+namespace App\\Config;
+
+class Application
+{
+    public function run()
+    {
+        // Add your application logic here
+        echo 'Application is running!';
+    }
+}" > src/Config/Application.php;
+    echo "${GREEN}src/Config/Application.php created${NC}"
+
+    # Create example view
+    echo "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title><?= \$title ?? 'MVC Application' ?></title>
+    <link rel=\"stylesheet\" href=\"assets/css/style.css\">
+</head>
+<body>
+    <header>
+        <nav>
+            <!-- Add your navigation here -->
+        </nav>
+    </header>
+
+    <main>
+        <?= \$content ?? 'Hello World!' ?>
+    </main>
+
+    <footer>
+        <!-- Add your footer here -->
+    </footer>
+    <script src=\"assets/js/main.js\"></script>
+</body>
+</html>" > src/Views/layouts/main.php;
+    echo "${GREEN}src/Views/layouts/main.php created${NC}"
+
+    # Create basic 404 view
+    echo "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>404 Not Found</title>
+</head>
+<body>
+    <h1>404 Not Found</h1>
+    <p>The page you are looking for does not exist.</p>
+    <a href=\"/\">Go to Home</a>
+</body>
+</html>" > src/Views/partials/404.php;
+    echo "${GREEN}src/Views/partials/404.php created${NC}"
+
+    # Create basic CSS
+    echo '//@import "tailwindcss";
+
+Add your CSS styles here
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+header, footer {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+}
+header nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0 15px;
+}
+header nav a:hover {
+    text-decoration: underline;
+}
+main {
+    padding: 20px;
+    background-color: white;
+}
+footer {
+    text-align: center;
+    font-size: 0.8em;
+    margin-top: 20px;
+}
+/* Add your custom styles here */
+
+' > assets/css/style.css; 
+    echo "${GREEN}assets/css/style.css created${NC}"
+
+    # Create basic JavaScript
+    echo "// Add your JavaScript code here
+console.log('Application loaded');" > assets/js/main.js;
+    echo "${GREEN}assets/js/main.js created${NC}"
+
+    # Create README
+    echo "# $PROJECT_NAME
+
+A PHP MVC Application
+
+## Installation
+
+1. Clone this repository
+2. Copy \`.env.example\` to \`.env\` and configure your environment
+3. Start your PHP server: \`php -S localhost:8000 -t public\`
+
+## Project Structure
+
+\`\`\`
+$PROJECT_NAME
+├── assets/                     # Public assets
+├── config/                     # Configuration files
+├── logs/                       # Application logs
+├── public/                     # Public assets
+├── src/                        # Application's Source code
+│   ├── Config/                 # Configuration files
+│   ├── Controllers/            # Application controllers
+│   │   ├── HomeController.php  # Example home controller
+│   │   └── 404Controller.php   # Example 404 controller
+│   ├── Database/               # Database related files
+│   └── Helpers/                # Helper functions
+│   ├── Models/                 # Database models
+│   │   └── User.php            # Example user model
+│   ├── Router/                 # Routing logic      
+│   │   ├──Router.php           # Main router logic file
+│   │   └── routes.php          # Application routes file
+│   ├── Services/               # Business logic services
+│   ├── Views/                  # View templates
+│   │   ├── layouts/            # Layout templates
+│   │   │   └── main.php        # Main HTML layout template
+│   │   └── partials/           # Partial templates
+│   │   │   └── 404.php         # Main HTML layout template
+├── tests/                      # Unit tests
+|   └── .gitkeep                # Empty .gitkeep file
+├── index.php                   # Entry point for the application
+├── .env.example                # Example environment variables
+└── .gitignore                  # Git ignore file
+
+\`\`\`" > README.md;
+    echo "${GREEN}README.md created${NC}"
+    echo "##############################################################################"
+
+    echo "${GREEN}Project created successfully!${NC}"
+    echo "Next steps:"
+    echo "1. cd $PROJECT_NAME"
+    echo "2. cp .env.example .env"
+    echo "3. Configure your environment variables"
+    echo "4. php -S localhost:8000 -t public"
+}
+
+# Main script logic
+case "$1" in
+  help)
+    echo "Welcome to MyCLI!"
+    echo "Available commands:"
+    echo "  scaffold [${BLUE}my_project${NC}]- Scaffold a PHP MVC project"
+    echo "  version - Show version"
+    echo "  model [${BLUE}MyModel${NC}] - Create a new model"
+    echo "  route [${BLUE}MyRoute${NC}] - Create a new route with controller and view"
+    echo "  help - Show this help message"
+    echo " ###############################################################################"
+    echo "The project structure will be created in the current directory: $PWD"
+    echo "Project Structure:"
+    echo "################################################################################"
+    echo "[${BLUE}my_project${NC}]        # Public assets
+├── assets/                     # Public assets
+├── config/                     # Configuration files
+├── logs/                       # Application logs
+├── public/                     # Public assets
+├── src/                        # Application's Source code
+│   ├── Config/                 # Configuration files
+│   ├── Controllers/            # Application controllers
+│   │   ├── HomeController.php  # Example home controller
+│   │   └── 404Controller.php   # Example 404 controller
+│   ├── Database/               # Database related files
+│   └── Helpers/                # Helper functions
+│   ├── Models/                 # Database models
+│   │   └── User.php            # Example user model
+│   ├── Router/                 # Routing logic      
+│   │   ├──Router.php           # Main router logic file
+│   │   └── routes.php          # Application routes file
+│   ├── Services/               # Business logic services
+│   ├── Views/                  # View templates
+│   │   ├── layouts/            # Layout templates
+│   │   │   └── main.php        # Main HTML layout template
+│   │   └── partials/           # Partial templates
+│   │   │   └── 404.php         # Main HTML layout template
+├── tests/                      # Unit tests
+|   └── .gitkeep                # Empty .gitkeep file
+├── index.php                   # Entry point for the application
+├── .md                   # Entry point for the application
+├── .env.example                # Example environment variables
+└── .gitignore                  # Git ignore file"
+    echo "################################################################################"
+    echo "You can contribute to this project by creating issues or pull requests on GitHub."
+    echo "Remote Repository at: https://github.com/rigsnv/my-projects-cli.git"
+    exit 0
+    ;;
+  scaffold)
+    if [[ -z "$2" ]]; then
+        echo "${RED}Error: Project name is required for scaffold command${NC}"
+        exit 1
+    fi
+    echo "${GREEN}Scaffolding a PHP MVC project named: $2${NC}"
+    echo "##############################################################################"
+    echo "${YELLOW}Starting scaffolding...${NC}"
+    scaffold "$2"
+    exit 0
+    ;;
+  model)
+    if [[ -z "$2" ]]; then
+        echo "${RED}Error: Model name is required${NC}"
+        exit 1
+    fi
+    echo "${GREEN}Creating model: $2${NC}"
+    echo "##############################################################################"
+    echo "${YELLOW}Creating model file...${NC}"
+    MODEL_NAME=$(echo "$2" | sed 's/\.php$//')
+    MODEL_FILE="src/Models/${MODEL_NAME}.php"
+    if [[ -f "$MODEL_FILE" ]]; then
+        echo "${RED}Error: Model file '$MODEL_FILE' already exists${NC}"
+        exit 1
+    fi
+    echo "<?php
+namespace App\\Models;
+class ${MODEL_NAME}
+{
+    // Add your model properties and methods here
+}" > "$MODEL_FILE"
+    echo "${GREEN}Model file created: $MODEL_FILE${NC}"
+    echo "##############################################################################"
+    echo "${GREEN}Model created successfully!${NC}"
+    echo "Next steps:"
+    echo "1. Open $MODEL_FILE and add your model properties and methods"
+    ;;
+  route)
+    if [[ -z "$2" ]]; then
+        echo "${RED}Error: Route name is required${NC}"
+        exit 1
+    fi
+    ROUTE_NAME=$2
+    ROUTES_FILE="src/Router/routes.php"
+    
+    if [[ ! -f "$ROUTES_FILE" ]]; then
+        # Create routes file if it doesn't exist
+        echo "${YELLOW}Creating routes file...${NC}"
+        echo "<?php
+
+return [
+    \"/$ROUTE_NAME\" => \"src/Controllers/${ROUTE_NAME}Controller.php\",
+];" > "$ROUTES_FILE"
+        echo "${GREEN}Routes file created with new route: /$ROUTE_NAME${NC}"
+    else
+        # Add new route to existing file
+        echo "${YELLOW}Adding new route to existing routes file...${NC}"
+        # Use sed to insert the new route before the closing bracket
+        sed -i '' -e "s/];/    \"\\/$ROUTE_NAME\" => \"src\\/Controllers\\/${ROUTE_NAME}Controller.php\",\n];/" "$ROUTES_FILE"
+        echo "${GREEN}Added new route: /$ROUTE_NAME${NC}"
+    fi
+    echo "##############################################################################"
+    echo "${YELLOW}Creating controller file...${NC}"
+    CONTROLLER_FILE="src/Controllers/${ROUTE_NAME}Controller.php"
+    if [[ -f "$CONTROLLER_FILE" ]]; then
+        echo "${RED}Error: Controller file '$CONTROLLER_FILE' already exists${NC}"
+        exit 1
+    fi
+    echo "<?php
+namespace App\\Controllers;
+class ${ROUTE_NAME}Controller
+{
+    public function index()
+    {
+        // Add your controller logic here
+        echo 'Hello from ${ROUTE_NAME}Controller!';
+    }
+}" > "$CONTROLLER_FILE"
+    echo "${GREEN}Controller file created: $CONTROLLER_FILE${NC}"
+    echo "##############################################################################"
+    echo "${YELLOW}Creating view file...${NC}"
+    VIEW_FILE="src/Views/${ROUTE_NAME}.php"
+    if [[ -f "$VIEW_FILE" ]]; then
+        echo "${RED}Error: View file '$VIEW_FILE' already exists${NC}"
+        exit 1
+    fi
+    echo "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>${ROUTE_NAME} Page</title>
+</head>
+<body>
+    <h1>${ROUTE_NAME} Page</h1>
+    <p>This is the ${ROUTE_NAME} page.</p>
+</body>
+</html>" > "$VIEW_FILE"
+    echo "${GREEN}View file created: $VIEW_FILE${NC}"
+    echo "##############################################################################"
+    echo "${YELLOW}Updating main layout...${NC}"
+    MAIN_LAYOUT_FILE="src/Views/layouts/main.php"
+    if [[ ! -f "$MAIN_LAYOUT_FILE" ]]; then
+        echo "${RED}Error: Main layout file '$MAIN_LAYOUT_FILE' does not exist${NC}"
+        exit 1
+    fi
+    # Add a link to the new route in the main layout
+    sed -i '' -e "s|</nav>|<a href=\"/$ROUTE_NAME\">$ROUTE_NAME</a></nav>|" "$MAIN_LAYOUT_FILE"
+    echo "${GREEN}Updated main layout with link to /$ROUTE_NAME${NC}"
+    echo "##############################################################################"
+    echo "${YELLOW}Updating README...${NC}"
+    README_FILE="README.md"
+    if [[ ! -f "$README_FILE" ]]; then
+        echo "${RED}Error: README file '$README_FILE' does not exist${NC}"
+        exit 1
+    fi
+    # Add a section for the new route in the README
+    echo "## $ROUTE_NAME Route
+This route is accessible at: \`/$ROUTE_NAME\`
+### Controller
+\`\`\`php
+namespace App\\Controllers;
+class ${ROUTE_NAME}Controller
+{
+    public function index()
+    {
+        // Add your controller logic here
+        echo 'Hello from ${ROUTE_NAME}Controller!';
+    }
+}
+\`\`\`
+### View
+\`\`\`html
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>${ROUTE_NAME} Page</title>
+</head>
+<body>
+    <h1>${ROUTE_NAME} Page</h1>
+    <p>This is the ${ROUTE_NAME} page.</p>
+</body>
+</html>
+\`\`\`" >> "$README_FILE"
+    echo "${GREEN}Updated README with new route information${NC}"
+    echo "##############################################################################"
+    echo "${YELLOW}Route scaffolding completed!${NC}"
+    echo "Next steps:"
+    echo "1. Open $CONTROLLER_FILE and add your controller logic"
+    echo "2. Open $VIEW_FILE and customize your view"
+    echo "3. Test your route by accessing http://localhost:8000/$ROUTE_NAME"
+    echo "4. Run 'php -S localhost:8000 -t public' to start the PHP server"
+    echo "5. Open README.md to see the new route documentation"
+    echo "6. Commit your changes to version control"
+    echo "7. Enjoy your new route!"
+    echo "##############################################################################"
+    echo "${GREEN}All done!${NC}"
+    echo "You can now access your new route at: http://localhost:8000/$ROUTE_NAME"
+    echo "Don't forget to run 'php -S localhost:8000 -t public' to start the PHP server."
+    echo "Happy coding!"
+    echo "##############################################################################"
+    echo "If you need help, run 'mycli help' for more information."
+    echo "Thank you for using MyCLI!"
+    echo "##############################################################################"
+    echo "Have a great day!"
+    echo "##############################################################################"
+    ;;
+  version)
+    echo "MyCLI version ${VERSION}"
+    ;;
+  *)
+    echo "Unknown command: $1"
+    exit 1
+    ;;
+esac
