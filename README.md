@@ -1,4 +1,4 @@
-# MyClI
+# MyCLI
 A command line interface for for creating and managing MCV Website Projects for PHP SSR websites. Written in Z-Shel for Unix systems.
 <p align="center">
   <img width="853" height="672" alt="MyCLI" src="https://github.com/user-attachments/assets/f381b848-c3bf-42be-bd69-d827e3772a90" />
