@@ -4,9 +4,14 @@ A command line interface for for creating and managing MCV Website Projects for 
   <img width="853" height="672" alt="MyCLI" src="https://github.com/user-attachments/assets/f381b848-c3bf-42be-bd69-d827e3772a90" />
 </p>
 
-# Contribution
-Feel free to fork the repo, create your own future branch and make a pull request.
+# Introduction
+This small project started with a simple scaffold function to automate the process of creating the basic folder structure of a simple MVC website.
 
+The current implementation only has three automations with very basic functionality and the templates are only in PHP. I crated it because I handcraft all my websites, and I use the cli in terminal to do tasks like creating folders and files. I find it more efficient than using the IDE's GUI.
+
+So I started crating scripts to automate these processes at a little larger scale, like scaffolding a whole project with very basic template files that connect it all together or adding and modifying all the necessary folders and files to create a new route or model.
+
+The current functionality is similar to that of Composer and Laravel and it is precisely for when I not using either of them.
 
 # Usage
 To try it out you can download the file and rename it whatever you want so you can use that file name as the prefix for the commands.
@@ -42,7 +47,7 @@ PATH="[path-to-your-file]:$PATH"
 You can also change the permissions to the containing folder only add the folder to the path. This way any other scripts you add to that folder will be in your path so you can run any of them. 
 
 # Usage
-The **scaffold** command will create a project in the current worling directory. A future implementation will be to add a path as an optional second argument. 
+The **scaffold** command will create a project in the current working directory. A future implementation will be to add a path as an optional second argument. 
 
 ## Available commands
 Prefixed with the script file name as in the previous example
@@ -91,7 +96,16 @@ help # Shows this help message
 ├── tests/                      # Unit tests
 |   └── .gitkeep                # Empty .gitkeep file
 ├── index.php                   # Entry point for the application
-├── .md                   # Entry point for the application
+├── README.md                   # A basic account of the project template
 ├── .env.example                # Example environment variables
 └── .gitignore                  # Git ignore file"
 ```
+
+# Contribution
+Feel free to fork the repo, create your own feature branch and make a pull request if you have any improvements.
+
+# Next 3 features:
+
+1. Making it modular.
+2. Adding an optional second argument with a flag to provide the path to a target directory for the scaffold function.
+3. A Merge Function for merging projects when working on different sections of a website separately both for PHP and React Projects.
