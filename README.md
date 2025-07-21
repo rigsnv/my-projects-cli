@@ -46,9 +46,6 @@ PATH="[path-to-your-file]:$PATH"
 
 You can also change the permissions to the containing folder only add the folder to the path. This way any other scripts you add to that folder will be in your path so you can run any of them. 
 
-# Usage
-The **scaffold** command will create a project in the current working directory. A future implementation will be to add a path as an optional second argument. 
-
 ## Available commands
 Prefixed with the script file name as in the previous example
 ```
@@ -66,6 +63,8 @@ route [MyRoute] # Creates a new route with controller and view
 ```
 help # Shows this help message
 ```
+
+The **scaffold** command will create a project in the current working directory. A future implementation will be to add a path as an optional second argument. 
 
 # Project Structure:
 
